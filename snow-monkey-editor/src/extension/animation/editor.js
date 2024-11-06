@@ -1,7 +1,12 @@
 import classnames from 'classnames/dedupe';
 
 import { hasBlockSupport, getBlockType } from '@wordpress/blocks';
-import { SelectControl, RangeControl } from '@wordpress/components';
+import {
+	SelectControl,
+	RangeControl,
+	__experimentalVStack as VStack,
+} from '@wordpress/components';
+
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -79,8 +84,9 @@ const Content = ( props ) => {
 	}, [ smeAnimation ] );
 
 	return (
-		<>
+		<VStack spacing="16px">
 			<SelectControl
+				__nextHasNoMarginBottom
 				label={ __( 'Animation', 'snow-monkey-editor' ) }
 				value={ smeAnimation || undefined }
 				options={ options }
@@ -97,6 +103,7 @@ const Content = ( props ) => {
 			/>
 
 			<RangeControl
+				__nextHasNoMarginBottom
 				label={ __( 'Delay', 'snow-monkey-editor' ) }
 				value={ smeAnimationDelay || 0 }
 				onChange={ ( value ) => {
@@ -109,6 +116,7 @@ const Content = ( props ) => {
 			/>
 
 			<RangeControl
+				__nextHasNoMarginBottom
 				label={ __( 'Duration', 'snow-monkey-editor' ) }
 				value={ smeAnimationDuration || undefined }
 				onChange={ ( value ) => {
@@ -119,7 +127,7 @@ const Content = ( props ) => {
 				max={ 5 }
 				step={ 0.1 }
 			/>
-		</>
+		</VStack>
 	);
 };
 

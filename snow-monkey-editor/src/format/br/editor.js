@@ -122,15 +122,15 @@ function InlineUI( { value, onChange, activeObjectAttributes, contentRef } ) {
 			shift={ true }
 			focusOnMount={ false }
 			anchor={ popoverAnchor }
-			className="block-editor-format-toolbar__image-popover"
+			className="sme-popover"
 		>
 			<div
 				style={ {
 					width: '260px',
-					padding: '16px',
 				} }
 			>
 				<ToggleControl
+					__nextHasNoMarginBottom
 					label={ __(
 						'Line breaks when on the desktop',
 						'snow-monkey-editor'
@@ -141,6 +141,7 @@ function InlineUI( { value, onChange, activeObjectAttributes, contentRef } ) {
 				/>
 
 				<ToggleControl
+					__nextHasNoMarginBottom
 					label={ __(
 						'Line breaks when on the tablet',
 						'snow-monkey-editor'
@@ -151,6 +152,7 @@ function InlineUI( { value, onChange, activeObjectAttributes, contentRef } ) {
 				/>
 
 				<ToggleControl
+					__nextHasNoMarginBottom
 					label={ __(
 						'Line breaks when on the mobile',
 						'snow-monkey-editor'
@@ -158,7 +160,6 @@ function InlineUI( { value, onChange, activeObjectAttributes, contentRef } ) {
 					checked={ ! disableMobile }
 					onChange={ onChangeMobile }
 					disabled={ disableDesktop && disableTablet }
-					__nextHasNoMarginBottom
 				/>
 			</div>
 		</Popover>
