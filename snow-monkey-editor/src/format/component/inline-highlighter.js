@@ -1,5 +1,6 @@
+import rgb2hex from 'rgb2hex';
+
 import {
-	getColorObjectByAttributeValues,
 	useCachedTruthy,
 	useSettings,
 	__experimentalColorGradientControl as ColorGradientControl,
@@ -7,34 +8,32 @@ import {
 } from '@wordpress/block-editor';
 
 import { getActiveFormat, useAnchor } from '@wordpress/rich-text';
+
 import { withSpokenMessages, Popover } from '@wordpress/components';
 import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-export function getActiveBackgroundColor( formatName, formatValue, colors ) {
-	const activeBackgroundColorFormat = getActiveFormat(
-		formatValue,
-		formatName
-	);
-	if ( ! activeBackgroundColorFormat ) {
+import hexLong2Short from '../helper/hex-long2short';
+
+export function getActiveColor( formatName, formatValue ) {
+	const activeColorFormat = getActiveFormat( formatValue, formatName );
+	if ( ! activeColorFormat ) {
 		return;
 	}
 
-	const styleBackgroundColor = activeBackgroundColorFormat.attributes.style;
-	if ( styleBackgroundColor ) {
-		return styleBackgroundColor.replace(
-			new RegExp( `^background-color:\\s*` ),
-			''
-		);
+	const styleColor = activeColorFormat.attributes.style;
+	if ( ! styleColor ) {
+		return;
 	}
 
-	const currentClass = activeBackgroundColorFormat.attributes.class;
-	if ( currentClass ) {
-		const colorSlug = currentClass.replace(
-			/.*has-([^\s]*)-background-color.*/,
-			'$1'
-		);
-		return getColorObjectByAttributeValues( colors, colorSlug ).color;
+	const hex = styleColor.match( /(#[0-9A-F]{3,6}) /i );
+	if ( hex ) {
+		return hex;
+	}
+
+	const rgb = styleColor.match( /,\s*?(rgba?\([^)]+\)) /i );
+	if ( rgb ) {
+		return hexLong2Short( rgb2hex( rgb[ 1 ] ).hex );
 	}
 }
 
@@ -54,15 +53,15 @@ const ColorPicker = ( { name, value, onChange } ) => {
 		[ userPalette, themePalette, defaultPalette ]
 	);
 
-	const activeBackgroundColor = useMemo(
-		() => getActiveBackgroundColor( name, value, colors ),
+	const activeColor = useMemo(
+		() => getActiveColor( name, value, colors ),
 		[ name, value, colors ]
 	);
 
 	return (
 		<ColorGradientControl
 			label={ __( 'Color', 'snow-monkey-editor' ) }
-			colorValue={ activeBackgroundColor }
+			colorValue={ activeColor }
 			onColorChange={ onChange }
 			{ ...useMultipleOriginColorsAndGradients() }
 			__experimentalHasMultipleOrigins={ true }
@@ -71,7 +70,7 @@ const ColorPicker = ( { name, value, onChange } ) => {
 	);
 };
 
-const InlineBackgroundColorUI = ( {
+const InlineColorUI = ( {
 	name,
 	value,
 	onChange,
@@ -91,11 +90,11 @@ const InlineBackgroundColorUI = ( {
 		<Popover
 			anchor={ popoverAnchor }
 			onClose={ onClose }
-			className="sme-popover sme-popover--inline-background-color components-inline-color-popover"
+			className="sme-popover sme-popover--inline-color components-inline-color-popover"
 		>
 			<ColorPicker name={ name } value={ value } onChange={ onChange } />
 		</Popover>
 	);
 };
 
-export default withSpokenMessages( InlineBackgroundColorUI );
+export default withSpokenMessages( InlineColorUI );
