@@ -1,13 +1,5 @@
-import {
-	RangeControl,
-	withSpokenMessages,
-	Popover,
-	Button,
-} from '@wordpress/components';
-
+import { RangeControl, Popover, Button } from '@wordpress/components';
 import { getActiveFormat, useAnchor } from '@wordpress/rich-text';
-
-import { useCachedTruthy } from '@wordpress/block-editor';
 import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -48,7 +40,6 @@ const LineHeightPicker = ( { name, title, value, onChange, onReset } ) => {
 			<Button
 				disabled={ value === undefined }
 				variant="secondary"
-				isSmall
 				onClick={ onReset }
 			>
 				{ __( 'Reset' ) }
@@ -62,8 +53,8 @@ const InlineLineHeightUI = ( {
 	title,
 	value,
 	onChange,
-	onClose,
 	onReset,
+	onClose,
 	contentRef,
 	settings,
 } ) => {
@@ -72,11 +63,11 @@ const InlineLineHeightUI = ( {
 		settings,
 	} );
 
-	const cachedRect = useCachedTruthy( popoverAnchor.getBoundingClientRect() );
-	popoverAnchor.getBoundingClientRect = () => cachedRect;
-
 	return (
 		<Popover
+			placement="bottom"
+			shift={ true }
+			focusOnMount="firstElement"
 			anchor={ popoverAnchor }
 			onClose={ onClose }
 			className="sme-popover sme-popover--inline-line-height components-inline-color-popover"
@@ -94,4 +85,4 @@ const InlineLineHeightUI = ( {
 	);
 };
 
-export default withSpokenMessages( InlineLineHeightUI );
+export default InlineLineHeightUI;

@@ -1,15 +1,12 @@
 import { find } from 'lodash';
 
 import {
-	useSettings,
-	useCachedTruthy,
 	__experimentalColorGradientControl as ColorGradientControl,
 	__experimentalUseMultipleOriginColorsAndGradients as useMultipleOriginColorsAndGradients,
 } from '@wordpress/block-editor';
 
 import { getActiveFormat, useAnchor } from '@wordpress/rich-text';
-
-import { withSpokenMessages, Popover } from '@wordpress/components';
+import { Popover } from '@wordpress/components';
 import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -49,20 +46,28 @@ export function getActiveGradient( formatName, formatValue, gradients ) {
 }
 
 const GradientPicker = ( { name, value, onChange } ) => {
-	const [ userGradients, themeGradients, defaultGradients ] = useSettings(
-		'color.gradients.custom',
-		'color.gradients.theme',
-		'color.gradients.default'
-	);
+	const multipleOriginColorsAndGradients =
+		useMultipleOriginColorsAndGradients();
 
-	const gradients = useMemo(
-		() => [
-			...( userGradients || [] ),
-			...( themeGradients || [] ),
-			...( defaultGradients || [] ),
-		],
-		[ userGradients, themeGradients, defaultGradients ]
-	);
+	const gradients = useMemo( () => {
+		const origins = multipleOriginColorsAndGradients?.gradients ?? [];
+
+		if ( Array.isArray( origins ) ) {
+			return origins.reduce( ( acc, origin ) => {
+				if ( Array.isArray( origin?.gradients ) ) {
+					return [ ...acc, ...origin.gradients ];
+				}
+
+				if ( origin?.gradient ) {
+					return [ ...acc, origin ];
+				}
+
+				return acc;
+			}, [] );
+		}
+
+		return origins;
+	}, [ multipleOriginColorsAndGradients?.gradients ] );
 
 	const activeGradient = useMemo(
 		() => getActiveGradient( name, value, gradients ),
@@ -74,7 +79,7 @@ const GradientPicker = ( { name, value, onChange } ) => {
 			label={ __( 'Color', 'snow-monkey-editor' ) }
 			gradientValue={ activeGradient }
 			onGradientChange={ onChange }
-			{ ...useMultipleOriginColorsAndGradients() }
+			{ ...multipleOriginColorsAndGradients }
 			__experimentalHasMultipleOrigins={ true }
 			__experimentalIsRenderedInSidebar={ true }
 		/>
@@ -94,11 +99,11 @@ const InlineGradientUI = ( {
 		settings,
 	} );
 
-	const cachedRect = useCachedTruthy( popoverAnchor.getBoundingClientRect() );
-	popoverAnchor.getBoundingClientRect = () => cachedRect;
-
 	return (
 		<Popover
+			placement="bottom"
+			shift={ true }
+			focusOnMount="firstElement"
 			anchor={ popoverAnchor }
 			onClose={ onClose }
 			className="sme-popover sme-popover--inline-gradient components-inline-gradient-popover"
@@ -112,4 +117,4 @@ const InlineGradientUI = ( {
 	);
 };
 
-export default withSpokenMessages( InlineGradientUI );
+export default InlineGradientUI;
