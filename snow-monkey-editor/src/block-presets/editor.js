@@ -19,7 +19,11 @@ const PREFERENCE_SCOPE = 'snow-monkey-editor/preferences';
 
 const GLOBAL_IGNORE_ATTRIBUTES = [
 	'allowedBlocks',
+	'anchor',
+	'ariaLabel',
 	'content',
+	'lock',
+	'metadata',
 	'templateLock',
 	'placeholder',
 ];
@@ -169,7 +173,6 @@ const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
 
 							<div className="sme-editor-block-presets-inserter__control">
 								<TextControl
-									__next40pxDefaultSize
 									__nextHasNoMarginBottom
 									value={ newPresetName || '' }
 									placeholder={ __(
@@ -244,22 +247,43 @@ const addBlockPresetsSupport = ( settings, name ) => {
 
 	if ( 'core/button' === name ) {
 		blockPresets = {
-			ignore: [ 'url', 'title', 'text', 'linkTarget', 'rel' ],
+			ignore: [
+				'url',
+				'title',
+				'text',
+				'linkTarget',
+				'rel',
+				'tagName',
+				'type',
+			],
 		};
 	} else if ( 'core/cover' === name ) {
 		blockPresets = {
-			ignore: [ 'url' ],
+			ignore: [
+				'url',
+				'useFeaturedImage',
+				'id',
+				'alt',
+				'backgroundType',
+				'focalPoint',
+				'sizeSlug',
+				'poster',
+				'allowedVideoProviders',
+			],
 		};
 	} else if ( 'core/list' === name ) {
 		blockPresets = {
 			ignore: [ 'values' ],
 		};
+	} else if ( 'core/heading' === name ) {
+		blockPresets = {
+			ignore: [ 'levelOptions' ],
+		};
 	} else if (
 		'core/paragraph' === name ||
 		'core/group' === name ||
 		'core/columns' === name ||
-		'core/column' === name ||
-		'core/heading' === name
+		'core/column' === name
 	) {
 		blockPresets = true;
 	}

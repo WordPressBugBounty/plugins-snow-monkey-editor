@@ -41,6 +41,7 @@ import {
 
 import {
 	blockAttributes as editingLockBlockAttributes,
+	isLocked as isEditingLocked,
 	settings as editingLockSettings,
 } from './editing-lock/editor';
 
@@ -169,6 +170,7 @@ const addBlockControl = createHigherOrderComponent( ( BlockEdit ) => {
 												} }
 												label={ setting.label }
 												className={ classnames(
+													'block-editor-color-gradient-item',
 													'block-editor-tools-panel-color-gradient-settings__item',
 													{
 														first: 0 === index,
@@ -244,6 +246,33 @@ addFilter(
 	'blocks.registerBlockType',
 	'snow-monkey-editor/attributes',
 	addBlockAttributes
+);
+
+addFilter(
+	'editor.BlockListBlock',
+	'snow-monkey-editor/editing-lock',
+	createHigherOrderComponent( ( BlockListBlock ) => {
+		return ( props ) => {
+			if (
+				! isEditingLocked( {
+					attributes: props?.block?.attributes,
+				} )
+			) {
+				return <BlockListBlock { ...props } />;
+			}
+
+			return (
+				<BlockListBlock
+					{ ...props }
+					wrapperProps={ {
+						...props.wrapperProps,
+						'data-sme-tabindex': props.wrapperProps?.tabIndex ?? 0,
+						tabIndex: -1,
+					} }
+				/>
+			);
+		};
+	}, 'withSnowMonkeyEditorEditingLock' )
 );
 
 addFilter(
